@@ -1,24 +1,43 @@
 const fs = require('fs');
+const BankCategory = require('./bank-category');
+
+let configData, configJson;
+
+// Read the config.json file
+try {
+  configJson = fs.readFileSync('config.json', 'utf-8');
+  configData = JSON.parse(configJson);
+} catch (error){
+  console.error(`Error reading or parsing the JSON file: ${error}`);
+}
 
 let myInput, myOutput;
+let keysArray = [];
+myInput = configData.csvInput;
+myOutput = configData.txtOutput;
 
-// Read the JSON file
-fs.readFile('config.json', 'utf8', (error, data) => {
-  if (error) {
-    console.log('Error:', error);
-    return;
-  }
+keysArray = Object.keys(configData.Categories);
 
-  try {
-    
-    // Get the input and output file paths
+if (keysArray.length === 0){
+  console.log("No categories found. Exiting ...");
+  return;
+}
 
+// Create array of BankCateogry objects
+let categories = [];
+for (i = 0; i < keysArray.length; i++){
 
-    const jsonData = JSON.parse(data);
-    const keysArray = Object.keys(jsonData.Categories);
-    console.log(keysArray);
+  categories.push(new BankCategory(keysArray[i], configData.Categories[keysArray[i]]));
+  // console.log(configData.Categories[keysArray[i]]);
+}
 
-  } catch (error) {
-    console.log('Error parsing JSON:', error);
+fs.readFile(myInput, "utf8", (error, myContent) => {
+
+  if(error){throw error;}
+
+  for (let row of myContent.split("\n")){
+
+    console.log(row);
+
   }
 });

@@ -1,7 +1,9 @@
 class BankCategory {
 
-    constructor(keyWordArray){
-        this._keyWordArray = keyWordArray
+    constructor(categoryName, keyWordArray){
+        this._categoryName = categoryName;
+        this._keyWordArray = [];
+        this._keyWordArray = keyWordArray;
         this._totalValue;
         this._transactionsLog;
     }
@@ -54,6 +56,14 @@ class BankCategory {
         }
     }
 
+    getCategoryName(){
+        return this._categoryName;
+    }
+
+    getCategoryKeyWords(){
+        return this._keyWordArray;
+    }
+
     getTotalValue(){
         return this._totalValue;
     }
@@ -61,5 +71,6 @@ class BankCategory {
     printLog(){
         console.log(this._transactionsLog);
     }
-
 }
+
+module.exports = BankCategory;
