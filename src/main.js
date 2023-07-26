@@ -30,9 +30,8 @@ for (i = 0; i < keysArray.length; i++) {
 
   categories.push(new BankCategory(keysArray[i], configData.Categories[keysArray[i]]));
 }
-
-let tempRowSplit, tempDate, tempValue, tempRowRemainder;
-let includesKeyword = false;
+// Create final category for columns that don't match any keywords
+categories.push(new BankCategory("Other"));
 
 let inputData = "";
 
@@ -44,38 +43,55 @@ try {
   return;
 }
 
+let tempRowSplit, tempDate, tempValue, tempRowRemainder;
+let includesKeyword = false;
+
 // Iterate through input data
 for (let row of inputData.split("\n")) {
 
-  if (row.includes(",")) {
-
-    tempRowSplit = row.split(`","`);
-
-    tempDate = tempRowSplit[0].substring(1);
-    tempValue = parseFloat(tempRowSplit[1]);
-    console.log(tempValue);
-
-    tempRowRemainder = `"${tempRowSplit[2]}`;
-
-    // If additional columns exist they are added to the remainder
-    for (let i = 3; i < tempRowSplit.length; i++) {
-      tempRowRemainder += `, "${tempRowSplit[i]}"`;
-    }
-
-    // Check row information for keywords
-    // CHANGE TO A FOR EACH LOOP
-    // Do I need === false?
-    for (let i = 0; i < categories.length || includesKeyword === false; i++) {
-
-      if (categories[i].compareToKeywords(tempRowRemainder)) {
-        categories[i].addToLog(tempDate, tempValue, tempRowRemainder);
-        includesKeyword = true;
-      }
-    }
+  if (!row.includes(",")) {
+    continue;
   }
 
+  tempRowSplit = row.split(`","`);
+
+  tempDate = tempRowSplit[0].substring(1);
+  tempValue = parseFloat(tempRowSplit[1]);
+
+  // Include subsequent array items later
+  tempRowRemainder = tempRowSplit[2];
+
+  for (let i = 0; i < categories.length-1 && includesKeyword === false; i++) {
+
+    if(categories[i].compareToKeywords(tempRowRemainder)){
+      includesKeyword = true;
+    }
+
+  } // End of iterating through categories
+
+  if (includesKeyword === false){
+    console.log(tempRowRemainder);
+    console.log("Other");
+  }
+
+  // Reset before next iteration
   includesKeyword = false;
 
-} // End of input file row iteration
 
-console.log(categories[0].getCategoryKeyWords());
+
+  //   // Check row information for keywords
+  //   // CHANGE TO A FOR EACH LOOP
+  //   // Do I need === false?
+  //   for (let i = 0; i < categories.length || includesKeyword === false; i++) {
+
+  //     includesKeyword = false;
+
+  //     if (categories[i].compareToKeywords(tempRowRemainder)) {
+  //       console.log(tempRowRemainder);
+  //       categories[i].addToLog(tempDate, tempValue, tempRowRemainder);
+  //       includesKeyword = true;
+  //     }
+  //   }
+  // }
+
+} // End of input file row iteration

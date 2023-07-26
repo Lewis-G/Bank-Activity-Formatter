@@ -1,6 +1,6 @@
 class BankCategory {
 
-    constructor(categoryName, keyWordArray){
+    constructor(categoryName, keyWordArray=[]){
         this._categoryName = categoryName;
         this._keyWordArray = [];
         this._keyWordArray = keyWordArray;
@@ -9,13 +9,16 @@ class BankCategory {
     }
 
     compareToKeywords(data){
-        for(i=0; i < this._keyWordArray.length; i++){
+
+        
+        
+        for(let i=0; i < this._keyWordArray.length; i++){
 
             if(data.includes(this._keyWordArray[i])){
-                return true
+                return true;
             }
         }
-        return false
+        return false;
     }
 
     addToLog(date, value, data){
@@ -36,8 +39,8 @@ class BankCategory {
         return this._totalValue;
     }
 
-    printLog(){
-        console.log(this._transactionsLog);
+    getTransactionsLog(){
+        return this._transactionsLog;
     }
 }
 
