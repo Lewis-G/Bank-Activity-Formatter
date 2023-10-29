@@ -2,45 +2,42 @@ class BankCategory {
 
     constructor(categoryName, keyWordArray=[]){
         this._categoryName = categoryName;
-        this._keyWordArray = [];
         this._keyWordArray = keyWordArray;
-        this._totalValue;
-        this._transactionsLog;
+        this._totalValue = 0;
+        this._transactionsList = "";
     }
 
-    compareToKeywords(data){
+    compareToKeywords(inputString){
 
-        
-        
         for(let i=0; i < this._keyWordArray.length; i++){
 
-            if(data.includes(this._keyWordArray[i])){
+            if(inputString.includes(this._keyWordArray[i])){
                 return true;
             }
         }
         return false;
     }
 
-    addToLog(date, value, data){
+    addToListAndValue(date, value, data){
 
-        this._transactionsLog = `\n${date} , ${value}, ${data}`;
+        this._transactionsList += `Date: ${date} , Value: $${value}, Description: ${data}\n`;
         this._totalValue += value;
     }
 
-    getCategoryName(){
+    get categoryName(){
         return this._categoryName;
     }
 
-    getCategoryKeyWords(){
+    get categoryKeyWords(){
         return this._keyWordArray;
     }
 
-    getTotalValue(){
+    get totalValue(){
         return this._totalValue;
     }
 
-    getTransactionsLog(){
-        return this._transactionsLog;
+    get transactionsList(){
+        return this._transactionsList;
     }
 }
 

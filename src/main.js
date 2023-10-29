@@ -1,97 +1,93 @@
 const fs = require('fs');
 const BankCategory = require('./bank-category');
 
-let configData, configJson;
+let configObject, configJson;
 
 // Read the config.json file
 try {
   configJson = fs.readFileSync('config.json', 'utf-8');
-  configData = JSON.parse(configJson);
+  configObject = JSON.parse(configJson);
 } catch (error) {
   console.error(`Error reading or parsing the JSON file: ${error}`);
   return;
 }
 
-let myInput, myOutput;
 let keysArray = [];
-myInput = configData.csvInput;
-myOutput = configData.txtOutput;
+let myInputPath = configObject.csvInput;
+let myOutputPath = configObject.txtOutput;
 
-keysArray = Object.keys(configData.Categories);
+keysArray = Object.keys(configObject.Categories);
 
 if (keysArray.length === 0) {
-  console.log("No categories found. Exiting ...");
+  console.List("No categories found. Exiting ...");
   return;
 }
 
-// Create array of BankCateogry objects
 let categories = [];
-for (i = 0; i < keysArray.length; i++) {
+let tempCategoryName = '';
 
-  categories.push(new BankCategory(keysArray[i], configData.Categories[keysArray[i]]));
+for (let i = 0; i < keysArray.length; i++) {
+
+  tempCategoryName = keysArray[i];
+
+  categories.push(new BankCategory(tempCategoryName, configObject.Categories[tempCategoryName]))
 }
-// Create final category for columns that don't match any keywords
+
+// Create a category for data that does not match any keywords
 categories.push(new BankCategory("Other"));
 
 let inputData = "";
 
 // Read the input file
 try {
-  inputData = fs.readFileSync(myInput, 'utf-8');
+  inputData = fs.readFileSync(myInputPath, 'utf-8');
 } catch (error) {
   console.error(`Error reading or parsing the JSON file: ${error}`);
   return;
 }
 
-let tempRowSplit, tempDate, tempValue, tempRowRemainder;
-let includesKeyword = false;
+let tempRowSplit = [];
+let matchedKeyword = false;
 
-// Iterate through input data
+// Iterate through each row/line of the input data
 for (let row of inputData.split("\n")) {
 
+  // Skip empty rows
   if (!row.includes(",")) {
     continue;
   }
 
+  // Split row by commas; date, value, description
   tempRowSplit = row.split(`","`);
 
-  tempDate = tempRowSplit[0].substring(1);
-  tempValue = parseFloat(tempRowSplit[1]);
+  // Trim 1st and 3rd items of commas
+  tempRowSplit[0] = tempRowSplit[0].substring(1);
+  tempRowSplit[1] = parseFloat(tempRowSplit[1]);
+  tempRowSplit[2] = tempRowSplit[2].substring(0, tempRowSplit[2].length - 2);
 
-  // Include subsequent array items later
-  tempRowRemainder = tempRowSplit[2];
+  for (let m = 0; m < categories.length && matchedKeyword === false; m++) {
 
-  for (let i = 0; i < categories.length-1 && includesKeyword === false; i++) {
-
-    if(categories[i].compareToKeywords(tempRowRemainder)){
-      includesKeyword = true;
+    if (categories[m].compareToKeywords(tempRowSplit[2])) {
+      matchedKeyword = true;
+      categories[m].addToListAndValue(tempRowSplit[0], tempRowSplit[1], tempRowSplit[2]);
     }
-
-  } // End of iterating through categories
-
-  if (includesKeyword === false){
-    console.log(tempRowRemainder);
-    console.log("Other");
   }
+  matchedKeyword = false;
+} // End of row/line iteration
 
-  // Reset before next iteration
-  includesKeyword = false;
+writeToFile();
 
+async function writeToFile() {
 
+  for (let t = 0; t < categories.length; t++) {
 
-  //   // Check row information for keywords
-  //   // CHANGE TO A FOR EACH LOOP
-  //   // Do I need === false?
-  //   for (let i = 0; i < categories.length || includesKeyword === false; i++) {
+    await fs.appendFile(myOutputPath, `Categories name : ${categories[t].categoryName}\n`);
 
-  //     includesKeyword = false;
+    // console.log();
+    // console.log(`Value is : ${categories[t].totalValue}`);
+    // console.log(`List is: `);
+    // console.log(categories[t].transactionsList);
+    // console.log();
 
-  //     if (categories[i].compareToKeywords(tempRowRemainder)) {
-  //       console.log(tempRowRemainder);
-  //       categories[i].addToLog(tempDate, tempValue, tempRowRemainder);
-  //       includesKeyword = true;
-  //     }
-  //   }
-  // }
-
-} // End of input file row iteration
+  }
+}
