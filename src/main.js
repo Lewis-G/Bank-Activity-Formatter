@@ -72,6 +72,11 @@ for (let row of inputData.split("\n")) {
       categories[m].addToListAndValue(tempRowSplit[0], tempRowSplit[1], tempRowSplit[2]);
     }
   }
+
+  if (matchedKeyword === false){
+    categories[categories.length-1].addToListAndValue(tempRowSplit[0], tempRowSplit[1], tempRowSplit[2]);
+  }
+
   matchedKeyword = false;
 } // End of row/line iteration
 
@@ -86,8 +91,8 @@ try {
 if (configObject["Writing out category Other"] === "yes") {
 
   console.log("Printing Other Category")
-  fs.writeFileSync(myOutputPath, categories[categories.length - 1].transactionsList);
-  exit(0);
+  fs.writeFileSync(myOutputPath, categories[categories.length-1].transactionsList);
+  process.exit(0);
 }
 
 // Write to the file
@@ -96,7 +101,7 @@ try {
   for (let i = 0; i < categories.length; i++) {
 
     fs.appendFileSync(myOutputPath, `${categories[i].categoryName}\n`);
-    fs.appendFileSync(myOutputPath, `Total value: $s${categories[i].totalValue}\n`);
+    fs.appendFileSync(myOutputPath, `Total value: $${categories[i].totalValue}\n`);
     fs.appendFileSync(myOutputPath, `Transaction Log: \n${categories[i].transactionsList}\n`);
   }
 } catch (error) {
