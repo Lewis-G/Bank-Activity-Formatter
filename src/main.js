@@ -75,19 +75,30 @@ for (let row of inputData.split("\n")) {
   matchedKeyword = false;
 } // End of row/line iteration
 
-writeToFile();
+// Create/clear the file
+try {
+  fs.writeFileSync(myOutputPath, '');
+} catch (err) {
+  console.error('Error creating/clearing the file:', err);
+}
 
-async function writeToFile() {
+// Print Other Category
+if (configObject["Writing out category Other"] === "yes") {
 
-  for (let t = 0; t < categories.length; t++) {
+  console.log("Printing Other Category")
+  fs.writeFileSync(myOutputPath, categories[categories.length - 1].transactionsList);
+  exit(0);
+}
 
-    await fs.appendFile(myOutputPath, `Categories name : ${categories[t].categoryName}\n`);
+// Write to the file
+try {
 
-    // console.log();
-    // console.log(`Value is : ${categories[t].totalValue}`);
-    // console.log(`List is: `);
-    // console.log(categories[t].transactionsList);
-    // console.log();
+  for (let i = 0; i < categories.length; i++) {
 
+    fs.appendFileSync(myOutputPath, `${categories[i].categoryName}\n`);
+    fs.appendFileSync(myOutputPath, `Total value: $s${categories[i].totalValue}\n`);
+    fs.appendFileSync(myOutputPath, `Transaction Log: \n${categories[i].transactionsList}\n`);
   }
+} catch (error) {
+  console.log('Error writing to file:', error);
 }
