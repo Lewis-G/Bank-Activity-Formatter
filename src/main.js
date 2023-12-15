@@ -87,14 +87,6 @@ try {
   console.error('Error creating/clearing the file:', err);
 }
 
-// Print Other Category
-if (configObject["Writing out category Other"] === "yes") {
-
-  console.log("Printing Other Category")
-  fs.writeFileSync(myOutputPath, categories[categories.length-1].transactionsList);
-  process.exit(0);
-}
-
 // Write to the file
 try {
 
