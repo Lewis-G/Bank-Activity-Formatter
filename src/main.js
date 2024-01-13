@@ -9,7 +9,7 @@ try {
   configObject = JSON.parse(configJson);
 } catch (error) {
   console.error(`Error reading or parsing the JSON file: ${error}`);
-  return;
+  process.exit(1);
 }
 
 let keysArray = [];
@@ -18,14 +18,15 @@ let myOutputPath = configObject.txtOutput;
 
 keysArray = Object.keys(configObject.Categories);
 
-if (keysArray.length === 0) {
-  console.List("No categories found. Exiting ...");
-  return;
+if (keysArray === undefined || keysArray.length === 0) {
+  console.error("No categories found. Exiting ...");
+  process.exit(1);
 }
 
 let categories = [];
 let tempCategoryName = '';
 
+// Create array of BankCategory objects
 for (let i = 0; i < keysArray.length; i++) {
 
   tempCategoryName = keysArray[i];
@@ -36,13 +37,12 @@ for (let i = 0; i < keysArray.length; i++) {
 // Create a category for data that does not match any keywords
 categories.push(new BankCategory("Other"));
 
-let inputData = "";
-
 // Read the input file
+let inputData = "";
 try {
   inputData = fs.readFileSync(myInputPath, 'utf-8');
 } catch (error) {
-  console.error(`Error reading or parsing the JSON file: ${error}`);
+  console.error(`Error reading or parsing the JSON file:`, error);
   return;
 }
 
@@ -65,11 +65,11 @@ for (let row of inputData.split("\n")) {
   tempRowSplit[1] = parseFloat(tempRowSplit[1]);
   tempRowSplit[2] = tempRowSplit[2].substring(0, tempRowSplit[2].length - 2);
 
-  for (let m = 0; m < categories.length && matchedKeyword === false; m++) {
+  for (let i = 0; i < categories.length && matchedKeyword === false; i++) {
 
-    if (categories[m].compareToKeywords(tempRowSplit[2])) {
+    if (categories[i].compareToKeywords(tempRowSplit[2])) {
       matchedKeyword = true;
-      categories[m].addToListAndValue(tempRowSplit[0], tempRowSplit[1], tempRowSplit[2]);
+      categories[i].addToListAndValue(tempRowSplit[0], tempRowSplit[1], tempRowSplit[2]);
     }
   }
 
@@ -85,10 +85,17 @@ try {
   fs.writeFileSync(myOutputPath, '');
 } catch (err) {
   console.error('Error creating/clearing the file:', err);
+  process.exit(1);
 }
 
 // Write to the file
 try {
+
+  if (configObject.OnlyPrintOther === "yes"){
+    fs.appendFileSync(myOutputPath, `${categories[categories.length-1].categoryName}\n`);
+    fs.appendFileSync(myOutputPath, `Total value: $${categories[categories.length-1].totalValue}\n`);
+    fs.appendFileSync(myOutputPath, `Transaction Log: \n${categories[categories.length-1].transactionsList}\n`);
+  }
 
   for (let i = 0; i < categories.length; i++) {
 

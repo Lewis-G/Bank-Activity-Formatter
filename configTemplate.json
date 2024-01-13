@@ -1,0 +1,18 @@
+{
+    "csvInput": "transactions.csv",
+    "txtOutput": "output.txt",
+    "OnlyPrintOther": "yes",
+    "Categories": {
+        "Rent": [
+            "Rent Payment"
+        ],
+        "Groceries": [
+            "Retail Purchase Woolworths",
+            "Retail Purchase Coles"
+        ], 
+        "Take away/Eating out": [
+            "Jim's Sushi"
+        ]
+
+    }
+}
